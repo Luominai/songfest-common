@@ -38,4 +38,15 @@ export default class Player {
         }
         return false
     }
+
+    setOwnership(socketId: string | null) {
+        if (socketId) {
+            this.socketId = socketId
+            this.taken = this.taken
+        }
+        else {
+            this.socketId = null
+            this.taken = false
+        }
+    }
 }

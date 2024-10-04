@@ -1,5 +1,6 @@
 import ClientState from "../types/ClientState";
 import Player from "./Player";
+import Score from "./Score";
 import Song from "./Song";
 
 export default class Songfest {
@@ -22,6 +23,80 @@ export default class Songfest {
         this.gameInProgress = false
         this.songfestOpen = false
         this.players = []
+    }
+
+    rateSong(player: Player, scores: { 
+        liked: Score; 
+        theme: Score; 
+    }) {
+        // check if the player doesn't exist or if they've already scored
+        if (!player || this.playersLockedIn.includes(player.name)) {
+            return false
+        }
+        // lock the player in
+        this.playersLockedIn.push(player.name)
+
+        // give score to the song and the song's submitter
+        player.rateSong(this.currentSong, this.currentSongSubmitter, scores)
+
+        // if everyone (except the submitter) has scored, go to next phase
+        if (this.playersLockedIn.length == this.players.length - 1) {
+            this.nextPhase()
+            return true
+        }
+        return false
+    }
+
+    guessSong(player: Player, guessData: {
+        playerName: string, 
+        time: number
+    }) {
+        if (!player || this.playersLockedIn.includes(player.name)) {
+            return false
+        }
+        // lock the player in
+        this.playersLockedIn.push(player.name)
+
+        // if the player guessed correctly, give points
+        player.guessSong(this.currentSong, this.currentSongSubmitter, guessData)
+        
+        // if everyone (excluding the submitter) has guessed, go to next phase
+        if (this.playersLockedIn.length == this.players.length - 1) {
+            this.nextPhase()
+            return true
+        }
+        return false
+    }
+
+    getPlayerByName(name: string) {
+        return this.players.find((entry) => entry.name == name)
+    }
+
+    getPlayerBySocketId(socketId: string) {
+        return this.players.find((entry) => entry.socketId == socketId)
+    }
+
+    addPlayer(name: string) {
+        if (!this.songsPerPerson) {
+            return null
+        }
+        let player = new Player(name, this.songsPerPerson)
+        this.players.push(player)
+        return player
+    }
+
+    startSongfest(settings: { 
+        songsPerPerson: number; 
+        theme: string; 
+        host: string; 
+    }) {
+        // set the settings
+        this.songsPerPerson = settings.songsPerPerson
+        this.theme = settings.theme
+        // open the songfest
+        this.songfestOpen = true
+        // add the host to the list of participants
+        this.host = this.addPlayer(settings.host)
     }
 
     startGame() {
