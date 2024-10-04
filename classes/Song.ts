@@ -38,7 +38,7 @@ export default class Song {
         this.themeScore = new Score()
         this.likedScore = new Score()
         this.guessDistribution = {}
-        this.getSongData()
+        await this.getSongData()
         this.initialized = true
     }
 
