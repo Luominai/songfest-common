@@ -122,17 +122,15 @@ export default class Songfest {
 
     nextPhase() {
         // if we are on phase 3 (end of a cycle), check if there is a next song. If not end the game
-        if (this.phase == 3) {
-            if (!this.nextSong()) {
-                console.log("game is over")
-                this.phase = 4
-                // return so you don't change phase
-                return 
-            }
+        if (this.phase == 3 && !this.nextSong()) {
+            console.log("game is over")
+            this.phase = 4
         }
-        // move to the next phase
-        this.phase = (this.phase + 1) % 4
-        this.playersLockedIn = []
+        else {
+            // move to the next phase
+            this.phase = (this.phase + 1) % 4
+            this.playersLockedIn = []
+        }
         console.log("now on phase", this.phase)
     }
 
